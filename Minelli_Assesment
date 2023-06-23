@@ -1,0 +1,56 @@
+// server/server.js
+const express = require('express');
+const app = express();
+const httpServer = require('http').createServer(app);
+const io = require('socket.io')(httpServer);
+const cors = require('cors');
+
+app.use(cors());
+
+// Socket.IO connection handling
+io.on('connection', (socket) => {
+  console.log('New client connected');
+  
+  // Handle client events
+  socket.on('disconnect', () => {
+    console.log('Client disconnected');
+  });
+});
+
+const port = 3001; // Use any port you prefer
+httpServer.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
+});
+
+
+// server/routes/chatRoutes.js
+const express = require('express');
+const router = express.Router();
+
+// Define your API routes here
+
+module.exports = router;
+
+
+// server/controllers/chatController.js
+let users = [];
+
+// Get all users
+exports.getAllUsers = (req, res) => {
+  res.json(users);
+};
+
+// Add a new user
+exports.addUser = (req, res) => {
+  const { name } = req.body;
+  const newUser = { id: users.length + 1, name };
+  users.push(newUser);
+  res.status(201).json(newUser);
+};
+
+// Remove a user
+exports.removeUser = (req, res) => {
+  const { id } = req.params;
+  users = users.filter((user) => user.id !== Number(id));
+  res.sendStatus(204);
+};
